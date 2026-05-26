@@ -1,0 +1,257 @@
+@import '/vendor/filament/filament/resources/css/theme.css';
+
+@import '/vendor/filament/filament/resources/css/theme.css';
+/* =========================================================
+   GLOBAL DESIGN TOKENS
+========================================================= */
+
+:root {
+    --primary-50: 239 246 255;
+    --primary-100: 219 234 254;
+    --primary-200: 191 219 254;
+    --primary-300: 147 197 253;
+    --primary-400: 96 165 250;
+    --primary-500: 59 130 246;
+    --primary-600: 37 99 235;
+    --primary-700: 29 78 216;
+    --primary-800: 30 64 175;
+    --primary-900: 30 58 138;
+}
+
+body {
+    background: #f5f7fb;
+    font-family: Inter, sans-serif;
+}
+
+.dark body {
+    background: #09090b;
+}
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.fi-sidebar {
+    background: rgba(255, 255, 255, 0.75) !important;
+    backdrop-filter: blur(18px);
+    border-right: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+.dark .fi-sidebar {
+    background: rgba(17, 24, 39, 0.7) !important;
+    border-right: 1px solid rgba(55, 65, 81, 0.5);
+}
+
+.fi-sidebar-header {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.fi-sidebar-item-button {
+    border-radius: 16px !important;
+    margin-bottom: 6px;
+    transition: all 0.2s ease;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+}
+
+.fi-sidebar-item-button:hover {
+    transform: translateX(3px);
+    background: rgba(59, 130, 246, 0.08) !important;
+}
+
+.fi-sidebar-item-active .fi-sidebar-item-button {
+    background: linear-gradient(135deg, rgb(59,130,246), rgb(37,99,235)) !important;
+    color: white !important;
+    box-shadow: 0 10px 25px rgba(59,130,246,0.25);
+}
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.fi-topbar {
+    background: rgba(255, 255, 255, 0.75) !important;
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(229, 231, 235, 0.7);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.03);
+}
+
+.dark .fi-topbar {
+    background: rgba(17, 24, 39, 0.75) !important;
+    border-bottom: 1px solid rgba(55,65,81,0.4);
+}
+
+/* =========================================================
+   MAIN PAGE AREA
+========================================================= */
+
+.fi-main {
+    background:
+        radial-gradient(circle at top left, rgba(59,130,246,0.08), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(99,102,241,0.08), transparent 30%),
+        #f5f7fb;
+    min-height: 100vh;
+}
+
+.dark .fi-main {
+    background:
+        radial-gradient(circle at top left, rgba(59,130,246,0.1), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(99,102,241,0.08), transparent 30%),
+        #09090b;
+}
+
+/* =========================================================
+   CARDS & CONTAINERS
+========================================================= */
+
+.fi-section,
+.fi-widget,
+.fi-ta-table-container,
+.fi-fo-field-wrp,
+.fi-modal-window {
+    border-radius: 28px !important;
+    border: 1px solid rgba(229,231,235,0.7) !important;
+    background: rgba(255,255,255,0.75) !important;
+    backdrop-filter: blur(18px);
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.04),
+        0 1px 2px rgba(0,0,0,0.04);
+}
+
+.dark .fi-section,
+.dark .fi-widget,
+.dark .fi-ta-table-container,
+.dark .fi-fo-field-wrp,
+.dark .fi-modal-window {
+    background: rgba(17,24,39,0.7) !important;
+    border: 1px solid rgba(55,65,81,0.5) !important;
+}
+
+/* =========================================================
+   TABLES
+========================================================= */
+
+.fi-ta-table thead {
+    background: rgba(59,130,246,0.05);
+}
+
+.fi-ta-row:hover {
+    background: rgba(59,130,246,0.04) !important;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.fi-btn {
+    border-radius: 16px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease;
+}
+
+.fi-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.fi-input,
+.fi-select-input,
+.fi-textarea {
+    border-radius: 16px !important;
+    border: 1px solid rgba(209,213,219,0.7) !important;
+    background: rgba(255,255,255,0.9) !important;
+    transition: all 0.2s ease;
+}
+
+.dark .fi-input,
+.dark .fi-select-input,
+.dark .fi-textarea {
+    background: rgba(31,41,55,0.85) !important;
+    border: 1px solid rgba(75,85,99,0.6) !important;
+}
+
+.fi-input:focus,
+.fi-select-input:focus,
+.fi-textarea:focus {
+    border-color: rgb(59,130,246) !important;
+    box-shadow: 0 0 0 4px rgba(59,130,246,0.12) !important;
+}
+
+/* =========================================================
+   STATS WIDGETS
+========================================================= */
+
+.fi-wi-stats-overview-stat {
+    border-radius: 24px !important;
+    padding: 1.5rem !important;
+    background: linear-gradient(
+        145deg,
+        rgba(255,255,255,0.9),
+        rgba(255,255,255,0.65)
+    ) !important;
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+}
+
+.dark .fi-wi-stats-overview-stat {
+    background: linear-gradient(
+        145deg,
+        rgba(31,41,55,0.85),
+        rgba(17,24,39,0.7)
+    ) !important;
+}
+
+/* =========================================================
+   DROPDOWNS
+========================================================= */
+
+.fi-dropdown-panel {
+    border-radius: 20px !important;
+    overflow: hidden;
+    backdrop-filter: blur(18px);
+}
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(59,130,246,0.35);
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+.fi-topbar {
+    background: rgba(24,24,27,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.fi-topbar nav {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+/* Search box */
+.fi-topbar .fi-input-wrp {
+    border-radius: 14px;
+}
+
+/* User avatar */
+.fi-user-avatar {
+    border: 2px solid rgba(255,255,255,0.1);
+}
