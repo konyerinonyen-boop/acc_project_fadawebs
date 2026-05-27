@@ -25,6 +25,11 @@ class User extends Authenticatable implements FilamentUser
         'password',
         'profile_image',
         'zone_id',
+        'membership_id',
+        'phone',
+        'status',
+        'payment_status',
+        'email_verified_at',
     ];
 
     protected $hidden = [
@@ -63,8 +68,8 @@ class User extends Authenticatable implements FilamentUser
         ]);
     }
 
-//     public function permissions()
-// {
-//     return $this->belongsToMany(Permission::class);
-// }
+    public function posts()
+{
+    return $this->hasMany(Post::class);
+}
 }

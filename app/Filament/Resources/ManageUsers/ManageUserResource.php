@@ -52,10 +52,20 @@ class ManageUserResource extends Resource
         ];
     }
     public static function getEloquentQuery(): Builder
-{
-    return parent::getEloquentQuery()
-        ->role('member');
-}
+    {
+        $user = auth()->user();
+
+        $query = parent::getEloquentQuery()
+            ->role('member');
+
+        // Super admin sees all
+        if ($user->hasRole('super_admin')) {
+            return $query;
+        }
+
+        // Zonal admin sees only their zone
+        return $query->where('zone_id', $user->zone_id);
+    }
 
     public static function getPages(): array
     {

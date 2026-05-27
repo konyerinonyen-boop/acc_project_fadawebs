@@ -42,10 +42,20 @@ class ManageUserForm
                         'female' => 'Female',
                     ]),
 
+                // SUPER ADMIN CAN SELECT ANY ZONE
+                Select::make('zone_id')
+                    ->relationship('zone', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->visible(fn () => auth()->user()->hasRole('super_admin'))
+                    ->required(fn () => auth()->user()->hasRole('super_admin')),
+
+                // ZONAL ADMIN ONLY SEES THEIR ZONE (READ ONLY)
                 TextInput::make('zone_name')
                     ->label('Zone')
                     ->default(fn () => auth()->user()->zone?->name)
                     ->disabled()
+                    ->visible(fn () => auth()->user()->hasRole('zonal_admin'))
                     ->dehydrated(false),
 
                 TextInput::make('membership_id')
