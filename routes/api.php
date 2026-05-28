@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ZonalPostController;
+use App\Http\Controllers\Api\ZoneController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -19,3 +21,17 @@ Route::prefix('auth')->controller(AuthController::class)->group( function () {
   Route::post('send-reset-link', 'sendResetLink' );
   Route::post('reset-password', 'resetPassword' );
 });
+
+
+// Route::prefix('posts')->controller(ZonalPostController::class)->group( function () {
+//     Route::get('/zone/{zone_name}', 'zonalPosts');
+//     Route::get('/', 'allPosts');
+//     Route::get('/{postId}/zone/{zoneId}', 'detailPost');
+// });
+
+Route::prefix('zones')->group( function () {
+    Route::get('/', [ZoneController::class, 'index']);
+    Route::get('/{zoneId}/blogs', [ZonalPostController::class, 'zoneBlogs']);
+    Route::get('/{zoneId}/blogs/{postId}', [ZonalPostController::class, 'detailPost']);
+});
+
