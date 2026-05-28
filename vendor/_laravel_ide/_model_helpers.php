@@ -344,8 +344,8 @@ namespace App\Models {
      * @property string|null $wifi
      * @property string|null $dress_code
      * @property string|null $title
-     * @property mixed $zone_id
-     * @property mixed $user_id
+     * @property int|null $zone_id
+     * @property int $user_id
      * @property string|null $image
      * @property int $id
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Schedule> $schedules
@@ -693,9 +693,9 @@ namespace App\Models {
      * @property string|null $image
      * @property string $content
      * @property string $title
-     * @property mixed $category_id
-     * @property mixed $zone_id
-     * @property mixed $user_id
+     * @property int|null $category_id
+     * @property int|null $zone_id
+     * @property int $user_id
      * @property int $id
      * @property-read \App\Models\User $user
      * @property-read \App\Models\Zone $zone
@@ -1038,7 +1038,7 @@ namespace App\Models {
      * @property string|null $venue
      * @property string|null $speaker
      * @property string|null $title
-     * @property mixed $event_id
+     * @property int $event_id
      * @property int $id
      * @property-read \App\Models\Event $event
      * @method static \Illuminate\Database\Eloquent\Builder<Schedule>|Schedule whereId($value)
@@ -1377,7 +1377,7 @@ namespace App\Models {
      * @property string|null $image
      * @property string|null $title
      * @property string|null $name
-     * @property mixed $event_id
+     * @property int $event_id
      * @property int $id
      * @property-read \App\Models\Event $event
      * @method static \Illuminate\Database\Eloquent\Builder<Speakers>|Speakers whereId($value)
@@ -1712,7 +1712,7 @@ namespace App\Models {
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property string|null $remember_token
-     * @property mixed $zone_id
+     * @property int|null $zone_id
      * @property string $password
      * @property \Illuminate\Support\Carbon|null $email_verified_at
      * @property bool $payment_status

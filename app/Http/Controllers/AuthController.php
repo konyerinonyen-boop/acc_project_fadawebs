@@ -20,13 +20,29 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
+
         $request->validate([
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6|confirmed',
-            'profile_image' => 'nullable|image|max:2048|mimes:jpeg,png,jpg,gif',
-        ]);
+    'first_name' => 'required|string|max:255',
+    'last_name' => 'required|string|max:255',
+
+    'email' => 'required|email|unique:users,email',
+
+    'password' => 'required|min:6|confirmed',
+
+    'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+
+    'gender' => 'required|in:male,female',
+
+    'phone' => 'required|string|max:14',
+
+    'membership_id' => 'required|string|unique:users,membership_id',
+
+    'status' => 'required|in:pending,approved,suspended',
+
+    'payment_status' => 'required|boolean',
+
+    'zone_id' => 'required|exists:zones,id',
+]);
 
         $imagePath = null;
 
@@ -60,6 +76,12 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'profile_image' => $imagePath,
+            'gender' => $request->gender,
+             'phone' => $request->phone,
+             'zone_id' => $request->zone_id,
+             'membership_id' => 'MEM-' . rand(10000, 99999),
+              'status' => 'pending',
+             'payment_status' => false,
         ]);
 
         // Generate token
