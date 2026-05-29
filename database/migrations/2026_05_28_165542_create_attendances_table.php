@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
              $table->foreignId('event_id')
-                ->constrained()
                 ->nullable()
+                ->constrained()
                 ->cascadeOnDelete();
 
             $table->string('first_name')

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Notifications\LoginNotification;
+use App\Notifications\MemberNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Intervention\Image\ImageManager;
@@ -11,6 +13,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 use App\Notifications\PasswordResetNotification;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
@@ -79,7 +82,7 @@ class AuthController extends Controller
 
         // Generate token
         $token = $user->createToken('auth')->plainTextToken;
-
+          $user->notify(new MemberNotification);
         return response()->json([
             'message' => 'Registration successful. Please verify your email.',
             'status' => true,
@@ -110,7 +113,7 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('auth')->plainTextToken;
-
+        $user->notify(new LoginNotification());
         return response()->json([
             'message' => 'Login successful',
             'status' => true,
@@ -214,5 +217,19 @@ class AuthController extends Controller
             'status' => true,
             'message' => 'Password reset successful',
         ]);
+      
+
     }
+
+
+
+    public function user(Request $request)
+{
+    $user = User::with('zone')->find($request->user()->id);
+
+    return response()->json([
+        'status' => true,
+        'user' => $user
+    ]);
+}
 }

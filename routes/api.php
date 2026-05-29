@@ -9,13 +9,15 @@ use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ZonalPostController;
 use App\Http\Controllers\Api\ZoneController;
+use App\Http\Controllers\Api\AttendanceController;
+use App\Http\Controllers\EmailsController;
 use Illuminate\Http\Request;
 
 
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'user']
+
+);
 
 Route::get('/test', function () {
     return response()->json([
@@ -60,6 +62,7 @@ Route::get('/zone/{zoneId}/event/{eventId}', [EventPostController::class, 'detai
 // All Events and detail event 
 Route::prefix('event')->group(function (){
  Route::get('/', [EventController::class, 'index']);
+ Route::post('/attendance', [AttendanceController::class, 'store']);
 Route::get('/{eventId}', [EventController::class, 'getEvent']);
 });
 
@@ -71,4 +74,8 @@ Route::prefix('blog')->group( function () {
     Route::get('/{Id}', [ZonalPostController::class, 'getBlog']); 
 });
 
+
+// mail
+
+Route::get('send-email', [EmailsController::class, 'welcomeEmail']);
 
