@@ -35,15 +35,8 @@ class AuthController extends Controller
 
     'phone' => 'required|string|max:14',
 
-    'membership_id' => 'required|string|unique:users,membership_id',
-
-    'status' => 'required|in:pending,approved,suspended',
-
-    'payment_status' => 'required|boolean',
-
     'zone_id' => 'required|exists:zones,id',
 ]);
-
         $imagePath = null;
 
         if ($request->hasFile('profile_image')) {
@@ -106,7 +99,7 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $request->login)
-            ->orWhere('name', $request->login)
+            ->orWhere('first_name', $request->login)
             ->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {

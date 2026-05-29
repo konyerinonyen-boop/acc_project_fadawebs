@@ -9,7 +9,10 @@ use App\Models\Event;
 class EventPostController extends Controller
 {
     public function zoneEvent(string $zoneId)
-{
+{ 
+   
+
+
     $events = Event::with(['schedules', 'speakers', 'zone', 'user'])
         ->where('zone_id', $zoneId)
         ->get();
@@ -29,24 +32,31 @@ class EventPostController extends Controller
 }
 
   
-public function detailEvent(string $zoneId, string $eventId){
-   $event = Event::with(['schedules', 'speakers', 'user', 'zone'])
-    ->where('zone_id', $zoneId)
-    ->where('id', $eventId)
-    ->first();
 
-    
-        if(!$event){
-           return response()->json([
-              'status' => 'error',
-            'message' => 'No events found for this zone'
-           ],404);
-        }
+
+public function detailEvent($eventId)
+{
+
+ 
+
+    $event = Event::with([
+        'schedules',
+        'speakers',
+        'user',
+        'zone'
+    ])->find($eventId);
+
+    if (!$event) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Event not found'
+        ], 404);
+    }
 
     return response()->json([
-    'status' => 'success',
-    'data' => $event
-], 200);
+        'status' => 'success',
+        'data' => $event
+    ], 200);
 }
 
 

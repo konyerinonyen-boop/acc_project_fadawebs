@@ -20,4 +20,6 @@ class ZoneController extends Controller
             'data' => $zones
         ], 200);
     }
+
+    
 }
