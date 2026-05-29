@@ -6,6 +6,7 @@ use App\Filament\Resources\Events\Pages\CreateEvent;
 use App\Filament\Resources\Events\Pages\EditEvent;
 use App\Filament\Resources\Events\Pages\ListEvents;
 use App\Filament\Resources\Events\Pages\ViewEvent;
+use App\Filament\Resources\Events\RelationManagers\AttendancesRelationManager;
 use App\Filament\Resources\Events\RelationManagers\SchedulesRelationManager;
 use App\Filament\Resources\Events\RelationManagers\SpeakersRelationManager;
 use App\Filament\Resources\Events\Schemas\EventForm;
@@ -48,6 +49,7 @@ class EventResource extends Resource
         return [
            SchedulesRelationManager::class,
             SpeakersRelationManager::class,
+            AttendancesRelationManager::class,
         ];
     }
 

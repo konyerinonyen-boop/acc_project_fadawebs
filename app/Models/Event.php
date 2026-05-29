@@ -36,4 +36,9 @@ public function speakers()
 {
     return $this->hasMany(Speakers::class);
 }
+public function attendances()
+{
+    return $this->hasMany(Attendance::class);
+}
+
 }

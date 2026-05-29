@@ -36,6 +36,11 @@ class EventsTable
                     ->counts('speakers')
                     ->label('Speakers')
                     ->badge(),
+                TextColumn::make('attendances_count')
+                    ->counts('attendances')
+                    ->label('attendances')
+                    ->badge(),
+
                 TextColumn::make('user.first_name')
                     ->label('Created By')
                     ->searchable(),

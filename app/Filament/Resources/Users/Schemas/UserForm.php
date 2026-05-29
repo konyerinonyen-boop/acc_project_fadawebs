@@ -33,16 +33,15 @@ class UserForm
                 TextInput::make('password')
                     ->password()
                     ->required(),
-                // Select::make('zone_id')
-                //     ->label('Zone')
-                //     ->options(Zone::pluck('name', 'id'))
-                //     ->searchable()
-                //     ->preload(),
+                Select::make('zone_id')
+                    ->label('Zone')
+                    ->options(Zone::pluck('name', 'id'))
+                    ->searchable()
+                    ->preload(),
                     Select::make('role')
                 ->label('Role')
                 ->options(Role::pluck('name', 'name'))
                 ->searchable()
-                ->required()
                 ->afterStateHydrated(function ($set, $record) {
                     $set('role', $record?->roles->first()?->name);
                 })

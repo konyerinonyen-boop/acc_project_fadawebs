@@ -64,17 +64,17 @@ class UserResource extends Resource
 
         public static function canCreate(): bool
     {
-        return auth()->user()->can('create users');
+        return auth()->user()?->can('create users');
     }
 
         public static function canEdit($record): bool
     {
-        return auth()->user()->can('edit users');
+        return auth()->user()?->can('edit users');
     }
 
         public static function canDelete($record): bool
     {
-        return auth()->user()->can('delete users');
+        return auth()->user()?->can('delete users');
     }
 }
 

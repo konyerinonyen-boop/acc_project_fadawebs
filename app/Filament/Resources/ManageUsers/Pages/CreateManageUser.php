@@ -16,7 +16,9 @@ class CreateManageUser extends CreateRecord
 
     $data['password'] = bcrypt($data['password']);
 
-    $data['membership_id'] = 'MEM-' . strtoupper(uniqid());
+   if ($data['status'] === 'approved') {
+    $data['membership_id'] = 'MEM-' . str_pad($user->id, 4, '0', STR_PAD_LEFT);
+}
 
     return $data;
 }
