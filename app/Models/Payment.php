@@ -13,6 +13,7 @@ class Payment extends Model
         'payment_method',
         'status',
         'description',
+       'payment_proof_image'
     ];    
 
     public function user()

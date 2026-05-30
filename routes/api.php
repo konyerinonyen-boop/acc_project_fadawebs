@@ -10,7 +10,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ZonalPostController;
 use App\Http\Controllers\Api\ZoneController;
 use App\Http\Controllers\Api\AttendanceController;
-use App\Http\Controllers\EmailsController;
+use App\Http\Controllers\Api\MembersFeeController;
+use App\Http\Controllers\Api\MembershipPaymentController;
+use App\Http\Controllers\Api\PaymentController;
+
 use Illuminate\Http\Request;
 
 
@@ -75,7 +78,15 @@ Route::prefix('blog')->group( function () {
 });
 
 
-// mail
+// Manual payment
 
-Route::get('send-email', [EmailsController::class, 'welcomeEmail']);
+Route::prefix('payment')->controller(PaymentController::class)->group(function() {
+Route::post('/manualdonation', 'manualDonation');
+});
+
+Route::post('payment/manualMemberfee', [MembershipPaymentController::class, 'store']);
+
+// All membership fee
+
+Route::get('/membershipfee', [MembersFeeController::class, 'index']);
 
