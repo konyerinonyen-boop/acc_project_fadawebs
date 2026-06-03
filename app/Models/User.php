@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Database\Factories\UserFactory;
+// use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,7 +11,8 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
-use Spatie\Permission\Models\Permission;
+
+use Carbon\Carbon;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -28,8 +29,10 @@ class User extends Authenticatable implements FilamentUser
         'membership_id',
         'phone',
         'status',
+        'gender',
         'payment_status',
         'email_verified_at',
+        'membership_start_date'
     ];
 
     protected $hidden = [
@@ -71,5 +74,30 @@ class User extends Authenticatable implements FilamentUser
     public function posts()
 {
     return $this->hasMany(Post::class);
+}
+
+public function duesPayments()
+{
+    return $this->hasMany(DuesPayment::class);
+}
+
+public function monthsSinceJoin(): int
+{
+    if (!$this->membership_start_date) {
+        return 0;
+    }
+
+    return Carbon::parse($this->membership_start_date)
+        ->startOfMonth()
+        ->diffInMonths(now()->startOfMonth()) + 1;
+}
+public function monthsPaid(): int
+{
+    return $this->duesPayments()
+        ->sum('months_paid');
+}
+public function monthsOwing(): int
+{
+    return max(0, $this->monthsSinceJoin() - $this->monthsPaid());
 }
 }

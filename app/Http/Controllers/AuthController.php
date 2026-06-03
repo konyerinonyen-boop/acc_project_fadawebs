@@ -30,7 +30,6 @@ class AuthController extends Controller
 
     'email' => 'required|email|unique:users,email',
 
-    'password' => 'required|min:6|confirmed',
 
     'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 
@@ -38,7 +37,6 @@ class AuthController extends Controller
 
     'phone' => 'required|string|max:14',
 
-    'zone_id' => 'required|exists:zones,id',
 ]);
         $imagePath = null;
 
@@ -70,7 +68,6 @@ class AuthController extends Controller
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
             'profile_image' => $imagePath,
             'gender' => $request->gender,
              'phone' => $request->phone,
@@ -80,20 +77,46 @@ class AuthController extends Controller
              'payment_status' => false,
         ]);
 
-        // Generate token
-        $token = $user->createToken('auth')->plainTextToken;
-          $user->notify(new MemberNotification);
+        
+        
         return response()->json([
             'message' => 'Registration successful. Please verify your email.',
             'status' => true,
-            'token' => $token,
+    
             'user' => $user,
         ], 201);
+    }
+
+
+    public function setPassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        $user = $request->user();
+
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        $token = $request->user()->createToken('auth')->plainTextToken;
+
+        $user->notify(new MemberNotification);
+       
+        return response()->json([
+            'message' => 'Password set successfully',
+            'status' => true,
+            'token' => $token,
+            'user' => $request->user(),
+        ]);
     }
 
     /**
      * Login user
      */
+
+
     public function login(Request $request)
     {
         $request->validate([
@@ -217,7 +240,7 @@ class AuthController extends Controller
             'status' => true,
             'message' => 'Password reset successful',
         ]);
-      
+
 
     }
 

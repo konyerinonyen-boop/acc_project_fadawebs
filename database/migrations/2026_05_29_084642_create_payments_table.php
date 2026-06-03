@@ -11,30 +11,34 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('payments', function (Blueprint $table) {
-            $table->id();
-             $table->foreignId('user_id')
-                ->constrained()
-                ->cascadeOnDelete();
+       Schema::create('payments', function (Blueprint $table) {
+        $table->id();
 
-            $table->decimal('amount', 12, 2)->nullable();
+        $table->foreignId('user_id')
+            ->nullable()
+            ->constrained()
+            ->cascadeOnDelete();
 
-            $table->string('reference')->nullable();
+       
 
-            $table->enum('status', [
-                'pending',
-                'approved',
-                'suspended'
-            ])->default('pending');
+        $table->decimal('amount', 12, 2)
+        ->nullable();
 
-            $table->string('payment_method')->nullable();
+        $table->string('reference')->nullable();
 
-             $table->enum('description',[
-                'membership_fee',
-                'donation'
-             ])->nullable();
-            $table->timestamps();
-        });
+        $table->enum('status', [
+            'pending',
+            'approved',
+            'suspended',
+        ])->default('pending');
+
+        $table->string('payment_method')->nullable();
+
+        $table->string('payment_proof_image')->nullable();
+
+        $table->timestamps();
+    });
+
     }
 
     /**

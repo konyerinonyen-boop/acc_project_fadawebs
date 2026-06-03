@@ -35,6 +35,7 @@ Route::prefix('auth')->controller(AuthController::class)->group( function () {
   Route::post('login', 'login' );
   Route::post('send-reset-link', 'sendResetLink' );
   Route::post('reset-password', 'resetPassword' );
+  Route::post('set-password', 'setPassword' );
 });
 
 
@@ -62,13 +63,38 @@ Route::get('/zone/{zoneId}/event', [EventPostController::class, 'zoneEvent']);
 Route::get('/zone/{zoneId}/event/{eventId}', [EventPostController::class, 'detailEvent']);
 
 
-// All Events and detail event 
-Route::prefix('event')->group(function (){
- Route::get('/', [EventController::class, 'index']);
- Route::post('/attendance', [AttendanceController::class, 'store']);
-Route::get('/{eventId}', [EventController::class, 'getEvent']);
-});
+// All Events and detail event = featured events from the super admin
+// Route::prefix('event')->group(function (){
+//  Route::get('/', [EventController::class, 'index']);
+//  Route::post('/attendance', [AttendanceController::class, 'store']);
+// Route::get('/{eventId}', [EventController::class, 'getEvent']);
 
+
+// // upcoming events
+// Route::get('/upcoming', [EventController::class, 'upcomingEvents']);
+// Route::get('/upcoming/{eventId}', [EventController::class, 'upcomingEventsDetail']);
+
+// // past events
+// Route::get('/past', [EventController::class, 'pastEvents']);
+// });
+
+
+Route::prefix('event')->group(function () {
+
+    Route::get('/', [EventController::class, 'index']);
+
+    Route::post('/attendance', [AttendanceController::class, 'store']);
+
+    // upcoming events (MUST come before /{eventId})
+    Route::get('/upcoming', [EventController::class, 'upcomingEvents']);
+    Route::get('/upcoming/{eventId}', [EventController::class, 'upcomingEventsDetail']);
+
+    // past events
+    Route::get('/past', [EventController::class, 'pastEvents']);
+
+    // wildcard route MUST be last
+    Route::get('/{eventId}', [EventController::class, 'getEvent']);
+});
 
 
 // All Blogs and detail blog

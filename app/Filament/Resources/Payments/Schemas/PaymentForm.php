@@ -10,42 +10,56 @@ class PaymentForm
 {
     public static function configure(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-               Select::make('user_id')
-                    ->relationship('user', 'first_name')
-                    ->searchable()
-                    ->required(),
+        return $schema->components([
 
-                TextInput::make('amount')
-                    ->numeric()
-                    ->required(),
+            // USER
+            Select::make('user_id')
+                ->relationship('user', 'first_name')
 
-                TextInput::make('reference')
-                    ->default(fn () => 'PAY-' . strtoupper(uniqid()))
-                    ->disabled(),
+                ->required(),
 
-                Select::make('status')
-                    ->options([
-                        'pending' => 'Pending',
-                        'approved' => 'Approved',
-                        'suspended' => 'Suspended',
-                    ])
-                    ->default('pending')
-                    ->required(),
+            // PAYMENT TYPE (VERY IMPORTANT)
+            Select::make('payment_type_id')
+                ->relationship('paymentType', 'name')
+                ->searchable()
+                ->preload()
+                ->required()
+                ->createOptionForm([
+                    TextInput::make('name')
+                        ->required(),
+                ]),
 
-                Select::make('payment_method')
-                    ->options([
-                        'cash' => 'Cash',
-                        'transfer' => 'Bank Transfer',
-                        'card' => 'Card',
-                        'paystack' => 'Paystack',
-                    ]),
-                 Select::make('description')
-                    ->options([
-                       'membership_fee' => 'Membership Fee',
-                       'donation' => 'Donation',
-                    ]),
-            ]);
+            // AMOUNT
+            TextInput::make('amount')
+                ->numeric()
+                ->required(),
+
+            // REFERENCE (FIXED)
+            TextInput::make('reference')
+                ->default(fn () => 'PAY-' . strtoupper(uniqid()))
+                ->disabled()
+                ->dehydrated()
+                ->required(),
+
+            // STATUS
+            Select::make('status')
+                ->options([
+                    'pending' => 'Pending',
+                    'approved' => 'Approved',
+                    'suspended' => 'Suspended',
+                ])
+                ->default('pending')
+                ->required(),
+
+            // PAYMENT METHOD
+            Select::make('payment_method')
+                ->options([
+                    'transfer' => 'Bank Transfer',
+                    'card' => 'Card',
+                    'paystack' => 'Paystack',
+                ])
+                ->nullable(),
+
+        ]);
     }
 }

@@ -18,6 +18,7 @@ class CreateManageUser extends CreateRecord
 
    if ($data['status'] === 'approved') {
     $data['membership_id'] = 'MEM-' . str_pad($user->id, 4, '0', STR_PAD_LEFT);
+     $data['membership_start_date'] = now();
 }
 
     return $data;

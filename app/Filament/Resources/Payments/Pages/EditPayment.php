@@ -30,6 +30,7 @@ class EditPayment extends EditRecord
             $user->update([
                 'status' => 'approved',
                 'payment_status' => true,
+                'membership_start_date' => now(),
                 'membership_id' => 'MEM-' . str_pad($user->id, 4, '0', STR_PAD_LEFT),
             ]);
         }

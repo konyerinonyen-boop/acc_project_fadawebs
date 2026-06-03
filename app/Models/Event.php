@@ -15,6 +15,7 @@ class Event extends Model
         'date',
         'image',
         'venue',
+        'is_featured',
     ];
 
     public function schedules()

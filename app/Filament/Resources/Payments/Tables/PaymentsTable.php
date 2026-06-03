@@ -15,31 +15,67 @@ class PaymentsTable
     {
         return $table
             ->columns([
-                TextColumn::make('user.first_name')->label('User'),
 
-                TextColumn::make('payment_method')->label('Payment Method'),
-                 TextColumn::make('description')->label(' Description'),
-            TextColumn::make('amount')->money('NGN'),
+                // MEMBER INFO
+                TextColumn::make('user.first_name')
+                    ->label('Member')
+                    ->searchable()
+                    ->sortable(),
 
-            TextColumn::make('status')
-                ->badge()
-                ->color(fn (string $state): string => match ($state) {
-                    'pending' => 'warning',
-                    'approved' => 'success',
-                    'suspended' => 'danger',
-                    default => 'gray',
-                }),
-            TextColumn::make('reference'),
+                // PAYMENT TYPE (IMPORTANT UPGRADE)
+               TextColumn::make('paymentType.name')
+            ->label('Payment Type')
+                    ->color(fn (string $state): string => match ($state) {
+                        'donation' => 'success',
+                        'dues' => 'warning',
+                        'membership' => 'primary',
+                        default => 'gray',
+                    }),
 
-            TextColumn::make('created_at')->dateTime(),
+                // AMOUNT
+                TextColumn::make('amount')
+                    ->money('NGN')
+                    ->sortable(),
+
+                // STATUS
+                TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'approved' => 'success',
+                        'suspended' => 'danger',
+                        default => 'gray',
+                    }),
+
+                // METHOD
+                TextColumn::make('payment_method')
+                    ->label('Method')
+                    ->badge()
+                    ->color('gray'),
+
+                // REFERENCE
+                TextColumn::make('reference')
+                    ->label('Ref')
+                    ->copyable()
+                    ->searchable(),
+
+                // DATE
+                TextColumn::make('created_at')
+                    ->label('Date')
+                    ->dateTime()
+                    ->sortable(),
             ])
-            ->filters([
-                //
-            ])
+
+            // UI IMPROVEMENTS
+            ->striped()
+            ->paginated([10, 25, 50])
+            ->defaultSort('created_at', 'desc')
+
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
             ])
+
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

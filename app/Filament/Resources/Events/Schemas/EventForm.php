@@ -8,6 +8,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class EventForm
@@ -25,6 +26,9 @@ class EventForm
                  Textarea::make('description')
                     ->required()
                     ->columnSpanFull(),
+                    Toggle::make('is_featured')
+    ->label('Featured Event')
+    ->helperText('Mark this event as featured to highlight it on the homepage.'),
                 TextInput::make('venue')
                     ->required(),
 

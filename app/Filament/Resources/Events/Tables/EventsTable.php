@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Table;
 
 class EventsTable
@@ -18,7 +19,7 @@ class EventsTable
 
                 TextColumn::make('title')
                     ->searchable()
-                    ->sortable(),
+                    php->sortable(),
 
                 TextColumn::make('venue')
                     ->searchable(),
@@ -26,6 +27,11 @@ class EventsTable
                 TextColumn::make('zone.name')
                     ->label('Zone')
                     ->badge(),
+
+                IconColumn::make('is_featured')
+                    ->label('Featured')
+                    ->boolean()
+                    ->sortable(),
 
                 TextColumn::make('schedules_count')
                     ->counts('schedules')

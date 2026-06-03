@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('payments', function (Blueprint $table) {
-            $table->foreignId('user_id')->nullable()->change();
+        Schema::table('events', function (Blueprint $table) {
+            $table->boolean('is_featured')->default(false)->after('description');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('payments', function (Blueprint $table) {
-            $table->foreignId('user_id')->nullable(false)->change();
+        Schema::table('events', function (Blueprint $table) {
+            $table->dropColumn('is_featured');
         });
     }
 };
