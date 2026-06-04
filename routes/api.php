@@ -46,6 +46,7 @@ Route::prefix('auth')->controller(AuthController::class)->group( function () {
 
 // Events && Blogs That belong to a zone with their details
 Route::prefix('dashboard')->middleware('auth:sanctum')->group( function () {
+    Route::get('/user', [AuthController::class, 'user']);
     Route::get('/resources', [ResourceController::class, 'index']);
     Route::get('/resources/{id}', [ResourceController::class, 'detailResource']);
 });

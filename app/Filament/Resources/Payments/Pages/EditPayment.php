@@ -31,7 +31,7 @@ class EditPayment extends EditRecord
                 'status' => 'approved',
                 'payment_status' => true,
                 'membership_start_date' => now(),
-                'membership_id' => 'MEM-' . str_pad($user->id, 4, '0', STR_PAD_LEFT),
+                'membership_id' => 'MEM-' . rand(10000, 99999),
             ]);
         }
     }
