@@ -62,4 +62,9 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ]);
     }
+
+      return $panel
+        ->widgets([
+            UserStats::class,
+        ]);
 }
