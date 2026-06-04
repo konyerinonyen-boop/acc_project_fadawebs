@@ -248,7 +248,7 @@ class AuthController extends Controller
 
     public function user(Request $request)
 {
-    $user = User::with('zone')->find($request->user()->id);
+    $user = User::with('zone')->find($request->user());
 
     return response()->json([
         'status' => true,
