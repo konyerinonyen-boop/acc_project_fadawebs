@@ -19,7 +19,7 @@ class EventsTable
 
                 TextColumn::make('title')
                     ->searchable()
-                    php->sortable(),
+                    ->sortable(),
 
                 TextColumn::make('venue')
                     ->searchable(),
