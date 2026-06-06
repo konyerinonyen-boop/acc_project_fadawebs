@@ -31,6 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
              ->brandName('ASC Admin')
+             ->globalSearch(false)
             ->colors([
                 'primary' => Color::Amber,
             ])

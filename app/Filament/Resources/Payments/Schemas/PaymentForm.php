@@ -19,16 +19,10 @@ class PaymentForm
                 ->required(),
 
             // PAYMENT TYPE (VERY IMPORTANT)
-            Select::make('payment_type_id')
+              Select::make('payment_type_id')
                 ->relationship('paymentType', 'name')
-                ->searchable()
-                ->preload()
-                ->required()
-                ->createOptionForm([
-                    TextInput::make('name')
-                        ->required(),
-                ]),
-
+                ->label('Payment Type')
+                ->required(),
             // AMOUNT
             TextInput::make('amount')
                 ->numeric()
@@ -53,6 +47,7 @@ class PaymentForm
 
             // PAYMENT METHOD
             Select::make('payment_method')
+                ->required()
                 ->options([
                     'transfer' => 'Bank Transfer',
                     'card' => 'Card',

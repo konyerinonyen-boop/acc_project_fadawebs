@@ -17,10 +17,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             // e.g. Membership, Donation, Dues, Event Fee
 
-        $table->foreignId('payment_id')
-            ->nullable()
-            ->constrained('payments')
-            ->nullOnDelete();
+       
 
             $table->boolean('is_active')->default(true);
 

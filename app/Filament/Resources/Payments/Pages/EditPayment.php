@@ -35,6 +35,7 @@ class EditPayment extends EditRecord
             ]);
         }
     }
+    $user->syncRoles(['member']);
 
     if ($payment->status === 'suspended') {
 

@@ -12,6 +12,7 @@ class Payment extends Model
         'reference',
         'payment_method',
         'status',
+        'payment_type_id',
        'payment_proof_image'
     ];
 
@@ -26,12 +27,12 @@ public function dues()
     return $this->hasOne(DuesPayment::class);
 }
 
-public function types():HasMany
+public function paymentType()
 {
-    return $this->hasMany(PaymentType::class);
+    return $this->belongsto(PaymentType::class);
 }
 
-public function paymentType()
+public function types()
 {
     return $this->hasOneThrough(
         PaymentType::class,

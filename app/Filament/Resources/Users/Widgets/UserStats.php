@@ -14,10 +14,12 @@ class UserStats extends StatsOverviewWidget
     return [
         Stat::make('Total Users', User::count()),
 
-        Stat::make(
-            'Members',
-            User::whereNotNull('membership_id')->count()
-        ),
+    Stat::make(
+    'Members',
+    User::whereNotNull('membership_id')
+        ->role('member')
+        ->count()
+),
 
         Stat::make(
             'New Users This Month',

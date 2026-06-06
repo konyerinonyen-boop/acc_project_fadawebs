@@ -87,13 +87,18 @@ public function monthsSinceJoin(): int
         return 0;
     }
 
-    return Carbon::parse($this->membership_start_date)
-        ->startOfMonth()
-        ->diffInMonths(now()->startOfMonth()) + 1;
+    $start = Carbon::parse($this->membership_start_date);
+    $now = now();
+
+    if ($start->greaterThan($now)) {
+        return 0;
+    }
+
+    return $start->diffInMonths($now);
 }
 public function monthsPaid(): int
 {
-    return $this->duesPayments()
+    return (int) $this->duesPayments()
         ->sum('months_paid');
 }
 public function monthsOwing(): int

@@ -72,17 +72,16 @@ class AuthController extends Controller
             'gender' => $request->gender,
              'phone' => $request->phone,
              'zone_id' => $request->zone_id,
-             'membership_id' => 'MEM-' . rand(10000, 99999),
               'status' => 'pending',
              'payment_status' => false,
         ]);
 
-        
-        
+
+
         return response()->json([
             'message' => 'Registration successful. Please verify your email.',
             'status' => true,
-    
+
             'user' => $user,
         ], 201);
     }
@@ -103,7 +102,7 @@ class AuthController extends Controller
         $token = $request->user()->createToken('auth')->plainTextToken;
 
         $user->notify(new MemberNotification);
-       
+
         return response()->json([
             'message' => 'Password set successfully',
             'status' => true,
