@@ -20,7 +20,6 @@ class EventsTable
                 TextColumn::make('title')
                     ->searchable()
                     ->sortable(),
-
                 TextColumn::make('venue')
                     ->searchable(),
 

@@ -24,7 +24,7 @@ class PaymentResource extends Resource
         protected static ?string $navigationLabel = ' All Payments And Create Payments Types';
 
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $ArrowTopRightOnSquareIcon  = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'Payment';
 
@@ -43,12 +43,7 @@ class PaymentResource extends Resource
         return PaymentsTable::configure($table);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            PaymentTypesRelationManager::class,
-        ];
-    }
+ 
 
     public static function getPages(): array
     {

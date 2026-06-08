@@ -35,6 +35,10 @@ class CategoryResource extends Resource
     {
         return CategoriesTable::configure($table);
     }
+        public static function canGloballySearch(): bool
+    {
+        return false;
+    }
 
     public static function getRelations(): array
     {

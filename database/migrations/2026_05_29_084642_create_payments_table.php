@@ -19,7 +19,7 @@ return new class extends Migration
             ->constrained()
             ->cascadeOnDelete();
 
-       
+
 
         $table->decimal('amount', 12, 2)
         ->nullable();
@@ -35,7 +35,10 @@ return new class extends Migration
         $table->string('payment_method')->nullable();
 
         $table->string('payment_proof_image')->nullable();
-
+         $table->foreignId('payment_type_id')
+            ->nullable()
+            ->constrained('payment_types')
+            ->nullOnDelete();
         $table->timestamps();
     });
 

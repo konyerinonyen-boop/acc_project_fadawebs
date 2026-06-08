@@ -122,3 +122,4 @@ TextColumn::make('months_owing')
             ]);
     }
 }
+

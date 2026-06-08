@@ -11,6 +11,9 @@ use App\Filament\Resources\Users\Schemas\UserInfolist;
 use App\Filament\Resources\Users\Tables\UsersTable;
 use App\Models\User;
 use BackedEnum;
+use Filament\Widgets\StatsOverviewWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
+
 use Filament\Forms\Components\Select;
 use Spatie\Permission\Models\Role;
 use Filament\Resources\Resource;
@@ -35,6 +38,12 @@ class UserResource extends Resource
         return UserInfolist::configure($schema);
     }
 
+    protected function getStats(): array
+    {
+        return [
+            Stat::make('Total Users', User::count()),
+        ];
+    }
     public static function table(Table $table): Table
     {
         return UsersTable::configure($table);
