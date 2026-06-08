@@ -9,49 +9,8 @@ use App\Models\Payment;
 
 class MembershipPaymentController extends Controller
 {
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'membership_fee_id'   => 'required|exists:membership_fees,id',
-            'amount'              => 'required|numeric|min:1',
-            'payment_method'      => 'required|string|max:255',
-            'payment_proof_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+  
 
-        $validated['user_id'] = auth('sanctum')->id();
-        $validated['reference'] = 'REF-' . time() . rand(1000, 9999);
-        $validated['status'] = 'pending';
-        $validated['description'] = 'membership_fee';
-
-        // upload proof
-        if ($request->hasFile('payment_proof_image')) {
-            $image = $request->file('payment_proof_image');
-            $imageName = time() . '_membership.jpg';
-
-            if (!file_exists(public_path('images/payments'))) {
-                mkdir(public_path('images/payments'), 0777, true);
-            }
-
-            $manager = new \Intervention\Image\ImageManager(
-                new \Intervention\Image\Drivers\Gd\Driver()
-            );
-
-            $manager->read($image)
-                ->scale(width: 800)
-                ->toJpeg(80)
-                ->save(public_path('images/payments/' . $imageName));
-
-            $validated['payment_proof_image'] = 'images/payments/' . $imageName;
-        }
-
-        $payment = Payment::create($validated);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Membership payment submitted successfully',
-            'data' => $payment
-        ], 201);
-    }
 
 
   

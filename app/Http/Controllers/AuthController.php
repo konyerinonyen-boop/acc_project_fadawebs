@@ -88,6 +88,66 @@ class AuthController extends Controller
     }
 
 
+    public function profileUpdate(Request $request)
+{
+    $user = $request->user();
+    
+    if (!$user) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Unauthenticated. You must be logged in to update your profile.'
+        ], 401);
+    }
+
+    $validate = $request->validate([
+        'first_name'    => 'sometimes|string|max:255',
+        'last_name'     => 'sometimes|string|max:255',
+        'email'         => 'sometimes|email|unique:users,email,' . $user->id,
+        'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'phone'         => 'sometimes|string|max:14',
+    ]);
+
+    if ($request->hasFile('profile_image')) {
+        
+        if ($user->profile_image && file_exists(public_path($user->profile_image))) {
+            @unlink(public_path($user->profile_image));
+        }
+
+        $image = $request->file('profile_image');
+        
+    
+        $nameSlug = str_replace(' ', '_', strtolower($request->input('first_name', $user->first_name)));
+        $imageName = time() . '_' . $nameSlug . '.jpg';
+
+        if (!file_exists(public_path('images/profiles'))) {
+            mkdir(public_path('images/profiles'), 0755, true);
+        }
+
+        $manager = new ImageManager(new Driver());
+
+        $resizedImage = $manager->read($image)
+            ->cover(500, 500)
+            ->toJpeg(80);
+
+        $resizedImage->save(public_path('images/profiles/' . $imageName));
+
+        
+        $validate['profile_image'] = 'images/profiles/' . $imageName;
+    } else {
+    
+        unset($validate['profile_image']);
+    }
+
+    
+    $user->update($validate);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Profile updated successfully',
+        'user' => $user
+    ], 200);
+}
+
     public function setPassword(Request $request)
     {
         $request->validate([
@@ -255,4 +315,8 @@ class AuthController extends Controller
         'user' => $user
     ]);
 }
+
+
+
+
 }

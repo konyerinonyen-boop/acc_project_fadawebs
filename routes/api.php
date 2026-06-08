@@ -43,10 +43,12 @@ Route::prefix('auth')->controller(AuthController::class)->group( function () {
 //  All Zones
  Route::get('/zone', [ZoneController::class, 'index']);
 
+ 
 
 // Events && Blogs That belong to a zone with their details
 Route::prefix('dashboard')->middleware('auth:sanctum')->group( function () {
     Route::get('/user', [AuthController::class, 'user']);
+    Route::post('/updateProfile', [AuthController::class, 'profileUpdate']);
     Route::get('/resources', [ResourceController::class, 'index']);
     Route::get('/resources/{id}', [ResourceController::class, 'detailResource']);
 });
@@ -108,12 +110,17 @@ Route::prefix('blog')->group( function () {
 // Manual payment
 
 Route::prefix('payment')->controller(PaymentController::class)->group(function() {
-Route::post('/manualdonation', 'manualDonation');
+    Route::post('/pay', 'pay');
+    Route::get('/paymentType', 'paymentType');
+    Route::get('/plans', 'plans');
+    
+    Route::middleware('auth:sanctum')->get('/donationSummary', 'donationSummary');
+    Route::middleware('auth:sanctum')->get('/memberFeeSummary', 'memberFeeSummary');
+    Route::middleware('auth:sanctum')->get('/calculateImpactPoints', 'calculateImpactPoints');
 });
 
-Route::post('payment/manualMemberfee', [MembershipPaymentController::class, 'store']);
 
-// All membership fee
 
-Route::get('/membershipfee', [MembersFeeController::class, 'index']);
+
+
 

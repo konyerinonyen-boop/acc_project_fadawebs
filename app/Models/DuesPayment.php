@@ -32,7 +32,7 @@ class DuesPayment extends Model
         {
             return $this->belongsTo(User::class);
         }
-
+     
       public function paymentType()
     {
         return $this->belongsTo(PaymentType::class, 'payment_type_id'); 

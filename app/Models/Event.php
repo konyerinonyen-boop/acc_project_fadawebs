@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
 {
+
+use HasFactory;
+
     protected $fillable = [
         'user_id',
         'zone_id',
@@ -17,6 +21,10 @@ class Event extends Model
         'venue',
         'is_featured',
     ];
+
+    
+
+    protected $guarded = [];
 
     public function schedules()
 {
