@@ -56,6 +56,7 @@ Route::prefix('dashboard')->middleware('auth:sanctum')->group( function () {
 //Members
 Route::prefix('members')->group(function() {
  Route::get('/', [MemberController::class, 'index']);
+ Route::get('/search', [MemberController::class, 'search']);
  Route::get('/{id}', [MemberController::class, 'detailMember']);
 });
 
@@ -85,6 +86,7 @@ Route::get('/zone/{zoneId}/event/{eventId}', [EventPostController::class, 'detai
 Route::prefix('event')->group(function () {
 
     Route::get('/', [EventController::class, 'index']);
+    Route::get('/search', [EventController::class, 'search']);
 
     Route::post('/attendance', [AttendanceController::class, 'store']);
 

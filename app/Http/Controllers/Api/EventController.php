@@ -105,6 +105,33 @@ class EventController extends Controller
   }
 
 
+public function search(Request $request)
+{
+    $request->validate([
+        'query' => 'required|string|min:2'
+    ]);
+
+    $searchTerm = $request->input('query');
+
+    $events = Event::where(function ($query) use ($searchTerm) {
+        $query->where('title', 'like', "%{$searchTerm}%")
+              ->orWhere('venue', 'like', "%{$searchTerm}%");
+    })->get();
+
+    if ($events->isEmpty()) {
+        return response()->json([
+            'status' => 'not found',
+            'message' => 'No events match your search',
+            'data' => []
+        ], 404);
+    }
+
+    return response()->json([
+        'status' => 'found',
+        'message' => 'Events retrieved successfully',
+        'data' => $events
+    ]);
+}
   
 
 }

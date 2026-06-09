@@ -43,4 +43,26 @@ public function detailMember($id){
         'data' => $member
     ], 200);
 }
+
+public function search(Request $request)
+{
+    
+    $request->validate(['query' => 'required|string|min:1']);
+
+    $searchTerm = $request->input('query');
+
+    $members = User::whereNotNull('membership_id')
+        ->where('status', 'approved')
+        ->where(function ($q) use ($searchTerm) {
+            $q->where('first_name', 'LIKE', '%' . $searchTerm . '%')
+              ->orWhere('email', 'LIKE', '%' . $searchTerm . '%')
+              ->orWhere('last_name', 'LIKE', '%' . $searchTerm . '%');
+        })
+        ->get();
+
+    return $members->isEmpty()
+        ? response()->json(['message' => 'No members match your search'], 404)
+        : response()->json(['status' => 'success', 'data' => $members], 200);
+}
+
 }
