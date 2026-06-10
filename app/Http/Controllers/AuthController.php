@@ -21,70 +21,63 @@ class AuthController extends Controller
     /**
      * Register user
      */
+   
+
     public function register(Request $request)
-    {
+{
+    $request->validate([
+        'first_name' => 'required|string|max:255',
+        'last_name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|min:6|confirmed',
+        'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'gender' => 'required|in:male,female',
+        'phone' => 'required|string|max:14',
+        'zone_id' => 'required|exists:zones,id', 
+    ]);
 
-        $request->validate([
-    'first_name' => 'required|string|max:255',
-    'last_name' => 'required|string|max:255',
+    $imagePath = null;
+    if ($request->hasFile('profile_image')) {
+        $image = $request->file('profile_image');
 
-    'email' => 'required|email|unique:users,email',
+        $imageName = time() . '_' . $request->first_name . '.jpg';
 
-
-    'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-
-    'gender' => 'required|in:male,female',
-
-    'phone' => 'required|string|max:14',
-
-]);
-        $imagePath = null;
-
-        if ($request->hasFile('profile_image')) {
-
-            $image = $request->file('profile_image');
-
-            $imageName = time() . '_' . $request->name . '.jpg';
-
-            // Create folder if it does not exist
-            if (!file_exists(public_path('images/profiles'))) {
-                mkdir(public_path('images/profiles'), 0777, true);
-            }
-
-            $manager = new ImageManager(new Driver());
-
-            // Resize image using Intervention Image v3
-            $resizedImage = $manager->read($image)
-                ->cover(500, 500)
-                ->toJpeg(80);
-
-            // Save image
-            $resizedImage->save(public_path('images/profiles/' . $imageName));
-
-            $imagePath = 'images/profiles/' . $imageName;
+        if (!file_exists(public_path('images/profiles'))) {
+            mkdir(public_path('images/profiles'), 0777, true);
         }
 
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'profile_image' => $imagePath,
-            'gender' => $request->gender,
-             'phone' => $request->phone,
-             'zone_id' => $request->zone_id,
-              'status' => 'pending',
-             'payment_status' => false,
-        ]);
+        $manager = new ImageManager(new Driver());
+        $manager->read($image)
+            ->cover(500, 500)
+            ->toJpeg(80)
+            ->save(public_path('images/profiles/' . $imageName));
 
-
-
-        return response()->json([
-            'message' => 'Registration successful. Please verify your email.',
-            'status' => true,
-
-            'user' => $user,
-        ], 201);
+        $imagePath = 'images/profiles/' . $imageName;
     }
+
+    $user = User::create([
+        'first_name' => $request->first_name,
+        'last_name' => $request->last_name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'profile_image' => $imagePath,
+        'gender' => $request->gender,
+        'phone' => $request->phone,
+        'zone_id' => $request->zone_id,
+        'status' => 'pending',
+        'payment_status' => false,
+    ]);
+
+    $token = $user->createToken('auth')->plainTextToken;
+    $user->notify(new MemberNotification);
+
+    return response()->json([
+        'message' => 'Registration successful. Please verify your email.',
+        'status' => true,
+        'token' => $token,
+        'user' => $user,
+    ], 201);
+}
 
 
     public function profileUpdate(Request $request)
@@ -147,29 +140,7 @@ class AuthController extends Controller
     ], 200);
 }
 
-    public function setPassword(Request $request)
-    {
-        $request->validate([
-            'password' => 'required|min:6|confirmed',
-        ]);
 
-        $user = $request->user();
-
-        $user->update([
-            'password' => Hash::make($request->password),
-        ]);
-
-        $token = $request->user()->createToken('auth')->plainTextToken;
-
-        $user->notify(new MemberNotification);
-
-        return response()->json([
-            'message' => 'Password set successfully',
-            'status' => true,
-            'token' => $token,
-            'user' => $request->user(),
-        ]);
-    }
 
     /**
      * Login user
