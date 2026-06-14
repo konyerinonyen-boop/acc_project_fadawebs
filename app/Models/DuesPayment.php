@@ -10,7 +10,6 @@ class DuesPayment extends Model
         protected $fillable = [
             'payment_id',
             'user_id',
-            'payment_id',
             'months_paid',
             'coverage_start',
             'coverage_end',
@@ -32,9 +31,9 @@ class DuesPayment extends Model
         {
             return $this->belongsTo(User::class);
         }
-     
+
       public function paymentType()
     {
-        return $this->belongsTo(PaymentType::class, 'payment_type_id'); 
+        return $this->belongsTo(PaymentType::class, 'payment_type_id');
     }
 }

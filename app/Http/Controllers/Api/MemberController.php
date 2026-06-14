@@ -4,15 +4,23 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\MemberReportingService;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class MemberController extends Controller
 {
+
+public function __construct(protected  MemberReportingService $reportingService)
+{
+    $this->reportingService = $reportingService;
+}
+
   public function index()
 {
-    
+
     $members = User::whereNotNull('membership_id')
-        ->where('status', 'approved') 
+        ->where('status', 'approved')
         ->get();
 
     if ($members->isEmpty()) {
@@ -29,7 +37,7 @@ class MemberController extends Controller
 
 public function detailMember($id){
     $member = User::whereNotNull('membership_id')
-        ->where('status', 'approved') 
+        ->where('status', 'approved')
         ->find($id);
 
    if (!$member) {
@@ -46,7 +54,7 @@ public function detailMember($id){
 
 public function search(Request $request)
 {
-    
+
     $request->validate(['query' => 'required|string|min:1']);
 
     $searchTerm = $request->input('query');
@@ -65,4 +73,30 @@ public function search(Request $request)
         : response()->json(['status' => 'success', 'data' => $members], 200);
 }
 
+public function memberStatus(User $user): JsonResponse
+    {
+        $data = $this->reportingService->getMemberStatus($user);
+
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ], 200);
+    }
+
+    /**
+     * Get aggregate data for a specific zone.
+     * URL: /api/zones/{zoneId}/summary
+     */
+    public function zoneSummary(int $zoneId): JsonResponse
+    {
+        $data = $this->reportingService->getZoneSummary($zoneId);
+
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ], 200);
+    }
 }
+
+
+

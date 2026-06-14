@@ -43,7 +43,7 @@ Route::prefix('auth')->controller(AuthController::class)->group( function () {
 //  All Zones
  Route::get('/zone', [ZoneController::class, 'index']);
 
- 
+
 
 // Events && Blogs That belong to a zone with their details
 Route::prefix('dashboard')->middleware('auth:sanctum')->group( function () {
@@ -105,7 +105,7 @@ Route::prefix('event')->group(function () {
 // All Blogs and detail blog
 Route::prefix('blog')->group( function () {
     Route::get('/', [ZonalPostController::class,'allPost']);
-    Route::get('/{Id}', [ZonalPostController::class, 'getBlog']); 
+    Route::get('/{Id}', [ZonalPostController::class, 'getBlog']);
 });
 
 
@@ -115,14 +115,22 @@ Route::prefix('payment')->controller(PaymentController::class)->group(function()
     Route::post('/pay', 'pay');
     Route::get('/paymentType', 'paymentType');
     Route::get('/plans', 'plans');
-    
+
     Route::middleware('auth:sanctum')->get('/donationSummary', 'donationSummary');
     Route::middleware('auth:sanctum')->get('/memberFeeSummary', 'memberFeeSummary');
     Route::middleware('auth:sanctum')->get('/calculateImpactPoints', 'calculateImpactPoints');
 });
 
 
+Route::middleware('auth:sanctum')->group(function () {
 
+    // Endpoint for single member status
+    Route::get('/members/{user}/status', [MemberController::class, 'memberStatus']);
+
+    // Endpoint for the zone breakdown
+  //  Route::get('/zones/{zoneId}/summary', [MemberController::class, 'zoneSummary']);
+
+});
 
 
 

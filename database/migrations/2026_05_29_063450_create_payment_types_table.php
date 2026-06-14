@@ -9,21 +9,19 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+
     public function up(): void
-    {
+{
+    // Only create the table if it DOES NOT exist yet
+    if (!Schema::hasTable('payment_types')) {
         Schema::create('payment_types', function (Blueprint $table) {
             $table->id();
-
             $table->string('name')->nullable();
-            // e.g. Membership, Donation, Dues, Event Fee
-
-       
-
             $table->boolean('is_active')->default(true);
-
             $table->timestamps();
         });
     }
+}
 
     /**
      * Reverse the migrations.
