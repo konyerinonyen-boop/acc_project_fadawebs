@@ -35,7 +35,7 @@ return new class extends Migration
         ->nullable();
 
         $table->date('coverage_end')
-        ->nulllable();
+        ->nullable();
 
          $table->foreignId('payment_type_id')
             ->nullable()

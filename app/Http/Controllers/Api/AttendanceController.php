@@ -8,13 +8,14 @@ use App\Notifications\EventRegistrationNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Schema;
 
 class AttendanceController extends Controller
 {
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'event_id'      => 'nullable|exists:events,id',
+            'event_id'      => 'required|exists:events,id',
             'first_name'    => 'nullable|string|max:255',
             'last_name'     => 'nullable|string|max:255',
             'phone_number'  => 'nullable|string|max:20',
@@ -23,32 +24,37 @@ class AttendanceController extends Controller
             'gender'        => 'nullable|in:male,female',
         ]);
 
-        $generatedId = 'ATT-' . strtoupper(Str::random(6));
-
-        while (
-            Attendance::where(
-                'attendance_id',
-                $generatedId
-            )->exists()
-        ) {
-            $generatedId =
-                'ATT-' . strtoupper(Str::random(6));
+        // Attach logged-in user automatically, if authenticated. Null for guests.
+        if (Schema::hasColumn('attendances', 'user_id')) {
+            $validatedData['user_id'] = $request->user()?->id;
         }
 
-        $validatedData['attendance_id'] =
-            $generatedId;
+        // Optional: prefill from user profile if logged in and not supplied
+        if ($request->user()) {
+            $user = $request->user();
+            $validatedData['first_name'] = $validatedData['first_name'] ?? $user->first_name ?? $user->name;
+            $validatedData['email']      = $validatedData['email'] ?? $user->email;
+        }
 
-        $attendance =
-            Attendance::create($validatedData);
-   
-Notification::route('mail', $attendance->email)
-    ->notify(new EventRegistrationNotification($attendance));
+        $generatedId = 'ATT-' . strtoupper(Str::random(6));
+
+        while (Attendance::where('attendance_id', $generatedId)->exists()) {
+            $generatedId = 'ATT-' . strtoupper(Str::random(6));
+        }
+
+        $validatedData['attendance_id'] = $generatedId;
+
+        $attendance = Attendance::create($validatedData);
+
+        if ($attendance->email) {
+            Notification::route('mail', $attendance->email)
+                ->notify(new EventRegistrationNotification($attendance));
+        }
 
         return response()->json([
-            'status' => 'success',
-            'message' =>
-                'Attendance recorded successfully!',
-            'data' => $attendance
+            'status'  => 'success',
+            'message' => 'Attendance recorded successfully!',
+            'data'    => $attendance,
         ], 201);
     }
 }

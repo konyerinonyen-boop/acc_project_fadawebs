@@ -27,7 +27,7 @@ return [
             'pages' => true,
             'widgets' => true,
             'resources' => true,
-            'custom_permissions' => false,
+            'custom_permissions' => true,
         ],
     ],
 
@@ -71,7 +71,7 @@ return [
     'super_admin' => [
         'enabled' => true,
         'name' => 'super_admin',
-        'define_via_gate' => false,
+        'define_via_gate' => true,
         'intercept_gate' => 'before',
     ],
 
@@ -87,7 +87,7 @@ return [
     */
 
     'panel_user' => [
-        'enabled' => true,
+        'enabled' => false,
         'name' => 'panel_user',
     ],
 
@@ -108,6 +108,7 @@ return [
         'separator' => ':',
         'case' => 'pascal',
         'generate' => true,
+        'format_custom_permission_keys' => false,
     ],
 
     /*
@@ -232,7 +233,44 @@ return [
     |
     */
 
-    'custom_permissions' => [],
+    'custom_permissions' => [
+        'view users',
+        'create users',
+        'update users',
+        'delete users',
+        'approve users',
+        'suspend users',
+        'view zones',
+        'create zones',
+        'update zones',
+        'delete zones',
+        'assign zone admin',
+        'view payments',
+        'create payments',
+        'verify payments',
+        'approve payments',
+        'delete payments',
+        'export payments',
+        'view events',
+        'create events',
+        'update events',
+        'delete events',
+        'approve events',
+        'register events',
+        'view announcements',
+        'create announcements',
+        'update announcements',
+        'delete announcements',
+        'send announcements',
+        'view roles',
+        'create roles',
+        'update roles',
+        'delete roles',
+        'assign permissions',
+        'view dashboard',
+        'view analytics',
+        'view zone analytics',
+    ],
 
     /*
     |--------------------------------------------------------------------------

@@ -11,11 +11,16 @@ class PaymentInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('user_id')
-                    ->numeric(),
+                TextEntry::make('user.name')
+                    ->label('Member')
+                    ->placeholder('—'),
                 TextEntry::make('amount')
-                    ->numeric()
+                    ->money('NGN')
                     ->placeholder('-'),
+                TextEntry::make('description')
+                    ->label('Payment type')
+                    ->badge()
+                    ->placeholder('—'),
                 TextEntry::make('reference')
                     ->placeholder('-'),
                 TextEntry::make('status')

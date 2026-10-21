@@ -2,12 +2,12 @@
 
 namespace App\Filament\Resources\DuesPayments\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class DuesPaymentsTable
 {
@@ -16,8 +16,9 @@ class DuesPaymentsTable
         return $table
             ->columns([
 
-                TextColumn::make('user.first_name')
+                TextColumn::make('user.name')
                     ->label('Member')
+                    ->icon('heroicon-m-user-circle')
                     ->searchable()
                     ->sortable(),
 
@@ -33,13 +34,16 @@ class DuesPaymentsTable
 
                 TextColumn::make('months_paid')
                     ->label('Months')
-                    ->badge(),
+                    ->badge()
+                    ->color('primary'),
 
                 TextColumn::make('coverage_start')
+                    ->label('Coverage starts')
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('coverage_end')
+                    ->label('Coverage ends')
                     ->date()
                     ->sortable(),
 
@@ -47,6 +51,12 @@ class DuesPaymentsTable
                 TextColumn::make('payment.status')
                     ->label('Payment Status')
                     ->badge()
+                    ->icon(fn (?string $state): string => match ($state) {
+                        'pending' => 'heroicon-m-clock',
+                        'approved' => 'heroicon-m-check-circle',
+                        'suspended' => 'heroicon-m-no-symbol',
+                        default => 'heroicon-m-question-mark-circle',
+                    })
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'warning',
                         'approved' => 'success',
@@ -58,22 +68,32 @@ class DuesPaymentsTable
                 TextColumn::make('payment.reference')
                     ->label('Reference')
                     ->searchable()
-                    ->copyable(),
+                    ->copyable()
+                    ->icon('heroicon-m-clipboard-document'),
             ])
-
-            ->striped()
+            ->filters([
+                SelectFilter::make('payment_status')
+                    ->label('Payment status')
+                    ->options([
+                        'pending' => 'Pending review',
+                        'approved' => 'Approved',
+                        'suspended' => 'Suspended',
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        $data['value'] ?? null,
+                        fn (Builder $query, string $status): Builder => $query->whereHas(
+                            'payment',
+                            fn (Builder $query) => $query->where('status', $status),
+                        ),
+                    )),
+            ])
+            ->deferFilters()
             ->paginated([10, 25, 50])
             ->defaultSort('created_at', 'desc')
-
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                ViewAction::make()->icon('heroicon-m-eye'),
+                EditAction::make()->icon('heroicon-m-pencil-square'),
             ])
-
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->recordAction(ViewAction::class);
     }
 }

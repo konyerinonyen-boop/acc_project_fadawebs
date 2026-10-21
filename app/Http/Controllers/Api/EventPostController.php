@@ -14,6 +14,7 @@ class EventPostController extends Controller
 
 
     $events = Event::with(['schedules', 'speakers', 'zone', 'user'])
+         ->withCount('attendances')
         ->where('zone_id', $zoneId)
         ->get();
 

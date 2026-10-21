@@ -7,19 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 class Attendance extends Model
 {
     protected $fillable = [
-        'event_id',
-        'first_name',
-        'last_name',
-        'gender',
-        'attendance_id',
-        'phone_number',
-        'email',
-        'phone',
-        'home_address',
-    ];
+    'event_id',
+    'user_id',
+    'first_name',
+    'last_name',
+    'gender',
+    'attendance_id',
+    'phone_number',
+    'email',
+    'phone',
+    'home_address',
+];
 
-    public function event()
-    {
-        return $this->belongsTo(Event::class);
-    }
+public function user()
+{
+    return $this->belongsTo(User::class);
+}
 }

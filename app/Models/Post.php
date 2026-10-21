@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Post extends Model
 {
@@ -14,6 +15,15 @@ class Post extends Model
         'content',
         'image',
     ];
+    
+ protected function image(): Attribute
+ {
+   return Attribute::make(
+     get: fn(?string $value) => $value ? asset('storage/' . $value) : null
+       );
+     
+ }
+    
 public function user()
 {
     return $this->belongsTo(User::class);

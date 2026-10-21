@@ -13,14 +13,15 @@ use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\MembersFeeController;
 use App\Http\Controllers\Api\MembershipPaymentController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\InvoiceController;
+use App\Http\Controllers\Api\PaymentHistoryController;
+use App\Http\Controllers\Api\BankAccountController;
 
 use Illuminate\Http\Request;
 
 
 
-Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'user']
-
-);
 
 Route::get('/test', function () {
     return response()->json([
@@ -29,13 +30,22 @@ Route::get('/test', function () {
 });
 
 
-// Login && Register
+// Invoice
+
+
+Route::middleware('auth:sanctum')->get('/payments/{id}/invoice', [InvoiceController::class, 'show']);
+
 Route::prefix('auth')->controller(AuthController::class)->group( function () {
   Route::post('register', 'register');
   Route::post('login', 'login' );
   Route::post('send-reset-link', 'sendResetLink' );
   Route::post('reset-password', 'resetPassword' );
   Route::post('set-password', 'setPassword' );
+});
+
+Route::middleware('auth:sanctum')->prefix('auth')->controller(AuthController::class)->group(function () {
+    Route::post('logout', 'logout');
+    Route::post('changePassword', 'changePassword');
 });
 
 
@@ -47,7 +57,7 @@ Route::prefix('auth')->controller(AuthController::class)->group( function () {
 
 // Events && Blogs That belong to a zone with their details
 Route::prefix('dashboard')->middleware('auth:sanctum')->group( function () {
-    Route::get('/user', [AuthController::class, 'user']);
+    Route::post('/changePicture', [AuthController::class, 'profilePicture']);
     Route::post('/updateProfile', [AuthController::class, 'profileUpdate']);
     Route::get('/resources', [ResourceController::class, 'index']);
     Route::get('/resources/{id}', [ResourceController::class, 'detailResource']);
@@ -58,6 +68,7 @@ Route::prefix('members')->group(function() {
  Route::get('/', [MemberController::class, 'index']);
  Route::get('/search', [MemberController::class, 'search']);
  Route::get('/{id}', [MemberController::class, 'detailMember']);
+ Route::get('/{id}/qr', [MemberController::class, 'qr']);
 });
 
 
@@ -112,7 +123,7 @@ Route::prefix('blog')->group( function () {
 // Manual payment
 
 Route::prefix('payment')->controller(PaymentController::class)->group(function() {
-    Route::post('/pay', 'pay');
+    Route::middleware('auth:sanctum')->post('/pay', 'pay');
     Route::get('/paymentType', 'paymentType');
     Route::get('/plans', 'plans');
 
@@ -132,5 +143,23 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
+Route::middleware('auth:sanctum')->get('/dashboard', [DashboardController::class, 'index']);
 
 
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/dashboard/dues-payment', [PaymentHistoryController::class, 'duesPayments']);
+    Route::get('/dashboard/donation-payments', [PaymentHistoryController::class, 'donationPayments']);
+
+
+});
+
+// Invoice
+
+
+Route::middleware('auth:sanctum')->get('/payments/{id}/invoice', [InvoiceController::class, 'show']);
+
+// Accounts
+
+Route::get('/bank-accounts', [BankAccountController::class, 'accounts']);

@@ -17,6 +17,14 @@ class DuesPayment extends Model
             'payment_type_id'
         ];
 
+        protected function casts(): array
+        {
+            return [
+                'coverage_start' => 'date',
+                'coverage_end' => 'date',
+            ];
+        }
+
         public function payment()
         {
             return $this->belongsTo(Payment::class);

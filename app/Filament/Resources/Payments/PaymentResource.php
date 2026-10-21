@@ -15,16 +15,15 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use App\Filament\Resources\Payments\RelationManagers\PaymentTypesRelationManager;
+
 class PaymentResource extends Resource
 {
     protected static ?string $model = Payment::class;
     protected static string|\UnitEnum|null $navigationGroup = 'Payment Management';
 
-        protected static ?string $navigationLabel = ' All Payments And Create Payments Types';
+    protected static ?string $navigationLabel = 'Payments';
 
-
-    protected static string|BackedEnum|null $ArrowTopRightOnSquareIcon  = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCreditCard;
 
     protected static ?string $recordTitleAttribute = 'Payment';
 
@@ -43,7 +42,7 @@ class PaymentResource extends Resource
         return PaymentsTable::configure($table);
     }
 
- 
+
 
     public static function getPages(): array
     {
@@ -57,6 +56,6 @@ class PaymentResource extends Resource
 
      public static function canViewAny(): bool
     {
-        return auth()->user()?->hasRole('super_admin');
+        return auth()->user()?->hasRole('super_admin') ?? false;
     }
 }

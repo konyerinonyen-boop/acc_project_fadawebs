@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('payments', function (Blueprint $table) {
-            $table->string("event_type");
-        });
+        if (! Schema::hasColumn('payments', 'event_type')) {
+            Schema::table('payments', function (Blueprint $table) {
+                $table->string('event_type')->nullable();
+            });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('payments', function (Blueprint $table) {
-            $table->dropColumn('event_type');
-        });
+        if (Schema::hasColumn('payments', 'event_type')) {
+            Schema::table('payments', function (Blueprint $table) {
+                $table->dropColumn('event_type');
+            });
+        }
     }
 };

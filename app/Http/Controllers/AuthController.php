@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use App\Notifications\PasswordResetNotification;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
@@ -70,12 +71,19 @@ class AuthController extends Controller
 
     $token = $user->createToken('auth')->plainTextToken;
     $user->notify(new MemberNotification);
+    
+     $NewMemberNotPaid = false;
+        if ($user->membership_id==null && $user->status=='pending')
+            {
+                $NewMemberNotPaid = true;
+            }
 
     return response()->json([
         'message' => 'Registration successful. Please verify your email.',
         'status' => true,
         'token' => $token,
         'user' => $user,
+         'NewMemberNotPaid' => $NewMemberNotPaid
     ], 201);
 }
 
@@ -95,40 +103,10 @@ class AuthController extends Controller
         'first_name'    => 'sometimes|string|max:255',
         'last_name'     => 'sometimes|string|max:255',
         'email'         => 'sometimes|email|unique:users,email,' . $user->id,
-        'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         'phone'         => 'sometimes|string|max:14',
     ]);
 
-    if ($request->hasFile('profile_image')) {
-        
-        if ($user->profile_image && file_exists(public_path($user->profile_image))) {
-            @unlink(public_path($user->profile_image));
-        }
-
-        $image = $request->file('profile_image');
-        
     
-        $nameSlug = str_replace(' ', '_', strtolower($request->input('first_name', $user->first_name)));
-        $imageName = time() . '_' . $nameSlug . '.jpg';
-
-        if (!file_exists(public_path('images/profiles'))) {
-            mkdir(public_path('images/profiles'), 0755, true);
-        }
-
-        $manager = new ImageManager(new Driver());
-
-        $resizedImage = $manager->read($image)
-            ->cover(500, 500)
-            ->toJpeg(80);
-
-        $resizedImage->save(public_path('images/profiles/' . $imageName));
-
-        
-        $validate['profile_image'] = 'images/profiles/' . $imageName;
-    } else {
-    
-        unset($validate['profile_image']);
-    }
 
     
     $user->update($validate);
@@ -136,11 +114,115 @@ class AuthController extends Controller
     return response()->json([
         'status' => 'success',
         'message' => 'Profile updated successfully',
-        'user' => $user
     ], 200);
 }
 
 
+ 
+ public function profilePicture(Request $request)
+{
+    $user = $request->user();
+
+    if (!$user) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Unauthenticated.'
+        ], 401);
+    }
+
+    $request->validate([
+        'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    // Delete old profile image if it exists
+    if ($user->profile_image && file_exists(public_path($user->profile_image))) {
+        @unlink(public_path($user->profile_image));
+    }
+
+    $image = $request->file('profile_image');
+
+    $nameSlug = str_replace(' ', '_', strtolower($user->first_name));
+    $imageName = time() . '_' . $nameSlug . '.jpg';
+
+    $profilesDir = public_path('profiles');
+    if (!file_exists($profilesDir)) {
+        mkdir($profilesDir, 0755, true);
+    }
+
+    $destinationPath = $profilesDir . '/' . $imageName;
+
+    $this->cropAndResizeImage($image->getRealPath(), $destinationPath, 500, 500, 80);
+
+    $user->update([
+        'profile_image' => 'profiles/' . $imageName,
+    ]);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Profile picture updated successfully',
+        'user' => $user
+    ], 200);
+}
+
+/**
+ * Crop an image to a square (center crop) and resize it using GD,
+ * then save it as a JPEG at the given quality.
+ */
+private function cropAndResizeImage(string $sourcePath, string $destinationPath, int $width, int $height, int $quality = 80): void
+{
+    $imageInfo = getimagesize($sourcePath);
+    $mime = $imageInfo['mime'];
+
+    // Load the source image based on its real MIME type
+    $source = match ($mime) {
+        'image/jpeg' => imagecreatefromjpeg($sourcePath),
+        'image/png'  => imagecreatefrompng($sourcePath),
+        'image/gif'  => imagecreatefromgif($sourcePath),
+        default => throw new \RuntimeException('Unsupported image type: ' . $mime),
+    };
+
+    $srcWidth = imagesx($source);
+    $srcHeight = imagesy($source);
+
+    // Calculate the crop box to get a centered square (like cover()/fit())
+    $srcRatio = $srcWidth / $srcHeight;
+    $targetRatio = $width / $height;
+
+    if ($srcRatio > $targetRatio) {
+        // Source is wider than target — crop the sides
+        $cropHeight = $srcHeight;
+        $cropWidth = (int) ($srcHeight * $targetRatio);
+        $cropX = (int) (($srcWidth - $cropWidth) / 2);
+        $cropY = 0;
+    } else {
+        // Source is taller than target — crop top/bottom
+        $cropWidth = $srcWidth;
+        $cropHeight = (int) ($srcWidth / $targetRatio);
+        $cropX = 0;
+        $cropY = (int) (($srcHeight - $cropHeight) / 2);
+    }
+
+    // Create the destination canvas
+    $destination = imagecreatetruecolor($width, $height);
+
+    // Preserve transparency for PNG/GIF before flattening to JPEG background
+    $white = imagecolorallocate($destination, 255, 255, 255);
+    imagefill($destination, 0, 0, $white);
+
+    imagecopyresampled(
+        $destination,
+        $source,
+        0, 0,
+        $cropX, $cropY,
+        $width, $height,
+        $cropWidth, $cropHeight
+    );
+
+    imagejpeg($destination, $destinationPath, $quality);
+
+    imagedestroy($source);
+    imagedestroy($destination);
+}
 
     /**
      * Login user
@@ -167,11 +249,32 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth')->plainTextToken;
         $user->notify(new LoginNotification());
+        
+         $NewMemberNotPaid = false;
+        if ($user->membership_id==null && $user->status=='pending')
+            {
+               $NewMemberNotPaid = true;
+            }
+        
+        
         return response()->json([
             'message' => 'Login successful',
             'status' => true,
             'token' => $token,
-            'user' => $user
+            'user' => $user,
+             'NewMemberNotPaid' => $NewMemberNotPaid
+        ]);
+    }
+    
+    
+    public function logout(Request $request)
+    {
+         if ($request->user()?->currentAccessToken()) {
+            $request->user()->currentAccessToken()->delete();
+        }
+
+        return response()->json([
+            'message' => 'Logged out successfully'
         ]);
     }
 
@@ -276,15 +379,37 @@ class AuthController extends Controller
 
 
 
-    public function user(Request $request)
-{
-    $user = User::with('zone')->find($request->user());
+ public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required'],
+            'password' => ['required', Password::defaults()],
+        ]);
 
-    return response()->json([
-        'status' => true,
-        'user' => $user
-    ]);
-}
+
+
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'message' => 'Incorrect password.'
+            ], 422);
+        }
+        $request->user()->currentAccessToken()->delete();
+
+        $user->update([
+            'password' => Hash::make($request->password)
+        ]);
+        $token = $user->createToken('auth_token')->plainTextToken;
+        return response()->json([
+            'message' => 'Password updated successfully.',
+            'token' => $token
+        ]);
+    }
 
 
 

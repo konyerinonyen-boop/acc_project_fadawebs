@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
+
 class AdminUserSeeder extends Seeder
 {
     /**
@@ -14,10 +14,7 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create roles if they do not exist
-          Role::firstOrCreate(['name' => 'super_admin']);
-        Role::firstOrCreate(['name' => 'zonal_admin']);
-        Role::firstOrCreate(['name' => 'member']);
+        $this->call(ApplicationRoleSeeder::class);
         
         $user = User::firstOrCreate(
             ['email' => 'admin@test.com'],

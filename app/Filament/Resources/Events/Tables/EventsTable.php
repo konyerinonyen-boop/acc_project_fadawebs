@@ -8,6 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 class EventsTable
@@ -19,9 +20,12 @@ class EventsTable
 
                 TextColumn::make('title')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->icon('heroicon-m-calendar-days')
+                    ->weight('semibold'),
                 TextColumn::make('venue')
-                    ->searchable(),
+                    ->searchable()
+                    ->icon('heroicon-m-map-pin'),
 
                 TextColumn::make('zone.name')
                     ->label('Zone')
@@ -30,6 +34,8 @@ class EventsTable
                 IconColumn::make('is_featured')
                     ->label('Featured')
                     ->boolean()
+                    ->trueIcon('heroicon-m-star')
+                    ->falseIcon('heroicon-m-minus')
                     ->sortable(),
 
                 TextColumn::make('schedules_count')
@@ -43,7 +49,7 @@ class EventsTable
                     ->badge(),
                 TextColumn::make('attendances_count')
                     ->counts('attendances')
-                    ->label('attendances')
+                    ->label('Attendance')
                     ->badge(),
 
                 TextColumn::make('user.first_name')
@@ -51,29 +57,23 @@ class EventsTable
                     ->searchable(),
 
                 TextColumn::make('date')
-                    ->dateTime('M d, Y h:i A')
+                    ->dateTime('M j, Y · g:i A')
                     ->sortable(),
-
             ])
-
             ->filters([
-                //
+                TernaryFilter::make('is_featured')
+                    ->label('Featured events'),
             ])
-
+            ->defaultSort('date', 'desc')
             ->recordActions([
-
-                ViewAction::make(),
-
-                EditAction::make(),
-
+                ViewAction::make()->icon('heroicon-m-eye'),
+                EditAction::make()->icon('heroicon-m-pencil-square'),
             ])
-
             ->toolbarActions([
-
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-
-            ]);
+            ])
+            ->recordAction(ViewAction::class);
     }
 }

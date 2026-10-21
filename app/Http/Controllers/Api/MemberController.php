@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\MemberReportingService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class MemberController extends Controller
 {
@@ -96,6 +97,34 @@ public function memberStatus(User $user): JsonResponse
             'data' => $data
         ], 200);
     }
+
+      public function qr($id)
+{
+    $member = User::whereNotNull('membership_id')
+        ->where('status', 'approved')
+        ->find($id);
+
+    if (!$member) {
+        return response()->json([
+            'status'  => false,
+            'message' => 'No active member found'
+        ], 404);
+    }
+
+    $url = rtrim(config('app.frontend_url'), '/') . "/members/" . $member->id;
+
+    $svg = QrCode::format('svg')
+        ->size(300)
+        ->generate($url);
+
+    return response()->json([
+        'status' => true,
+        'data' => [
+            'qr_code' => 'data:image/svg+xml;base64,' . base64_encode($svg),
+            'url'     => $url,
+        ],
+    ]);
+}
 }
 
 

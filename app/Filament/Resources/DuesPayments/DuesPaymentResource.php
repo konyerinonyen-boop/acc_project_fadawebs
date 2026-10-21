@@ -11,6 +11,7 @@ use App\Filament\Resources\DuesPayments\Schemas\DuesPaymentInfolist;
 use App\Filament\Resources\DuesPayments\Tables\DuesPaymentsTable;
 use App\Models\DuesPayment;
 use BackedEnum;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -55,6 +56,16 @@ class DuesPaymentResource extends Resource
             'view' => ViewDuesPayment::route('/{record}'),
             'edit' => EditDuesPayment::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return false;
     }
 
      public static function canViewAny(): bool

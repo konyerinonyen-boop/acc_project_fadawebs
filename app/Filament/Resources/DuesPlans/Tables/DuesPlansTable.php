@@ -6,8 +6,8 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Table;
 
 class DuesPlansTable
@@ -16,20 +16,26 @@ class DuesPlansTable
     {
         return $table
             ->columns([
-               TextColumn::make('name')->searchable(),
+                TextColumn::make('name')
+                    ->label('Plan')
+                    ->icon('heroicon-m-tag')
+                    ->weight('semibold')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('monthly_amount')
+                    ->label('Monthly amount')
                     ->money('NGN'),
-
-                TextColumn::make('is_active')
-                    ->badge()
-                    ->color(fn ($state) => $state ? 'success' : 'danger'),
+                IconColumn::make('is_active')
+                    ->label('Available')
+                    ->boolean()
+                    ->trueIcon('heroicon-m-check-circle')
+                    ->falseIcon('heroicon-m-pause-circle')
+                    ->sortable(),
             ])
-            ->filters([
-                //
-            ])
+            ->defaultSort('name')
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                ViewAction::make()->icon('heroicon-m-eye'),
+                EditAction::make()->icon('heroicon-m-pencil-square'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
