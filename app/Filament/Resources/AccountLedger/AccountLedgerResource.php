@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\AccountLedger;
 
-use App\Filament\Resources\AccountLedger\Pages\ListAccountLedgerLines;
+use App\Filament\Resources\AccountLedger\Pages\ListAccountLedger;
 use App\Models\JournalEntryLine;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -117,7 +117,7 @@ class AccountLedgerResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListAccountLedgerLines::route('/'),
+            'index' => ListAccountLedger::route('/'),
         ];
     }
 

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\BusinessTransaction;
 use App\Models\JournalEntry;
 use App\Models\LedgerAccount;
 use Illuminate\Support\Facades\DB;
@@ -10,61 +9,63 @@ use Illuminate\Validation\ValidationException;
 
 class BusinessTransactionService
 {
-    public function createExpense(array $data): BusinessTransaction
+    public function createExpense(array $data): JournalEntry
     {
-        return DB::transaction(function () use ($data): BusinessTransaction {
-            $transaction = BusinessTransaction::create([
-                'transaction_type' => 'expense',
-                'amount' => $data['amount'],
-                'description' => trim($data['description']),
-                'transaction_date' => $data['transaction_date'],
-                'payment_method' => $data['payment_method'],
-                'payment_status' => $data['payment_status'],
-                'created_by' => auth()->id(),
-            ]);
+        return DB::transaction(function () use ($data): JournalEntry {
+            $amount = (float) $data['amount'];
+            $description = trim($data['description']);
+            $transactionDate = $data['transaction_date'];
+            $paymentMethod = $data['payment_method'];
+            $paymentStatus = $data['payment_status'];
+
+            if ($amount <= 0) {
+                throw ValidationException::withMessages([
+                    'amount' => 'The expense amount must be greater than zero.',
+                ]);
+            }
+
+            if (! in_array($paymentStatus, ['paid', 'unpaid'], true)) {
+                throw ValidationException::withMessages([
+                    'payment_status' => 'Select either paid or unpaid.',
+                ]);
+            }
 
             $expenseAccount = $this->getActiveAccount('5000');
 
-            // Paid expenses reduce cash/bank.
-            // Unpaid expenses create an accounts-payable liability.
-            $creditAccount = $data['payment_status'] === 'paid'
+            // Paid expense: debit expense, credit cash/bank.
+            // Unpaid expense: debit expense, credit accounts payable.
+            $creditAccount = $paymentStatus === 'paid'
                 ? $this->getActiveAccount('1000')
                 : $this->getActiveAccount('2000');
 
             $entry = JournalEntry::create([
-                'entry_date' => $transaction->transaction_date->toDateString(),
-                'reference' => 'BT-' . $transaction->id,
-                'description' => $transaction->description,
-                'source_type' => $transaction->getMorphClass(),
-                'source_id' => $transaction->id,
+                'entry_date' => $transactionDate,
+                'reference' => 'JRN-' . now()->format('Ymd-His') . '-' . strtoupper(bin2hex(random_bytes(3)),
+                'description' => $description,
                 'created_by' => auth()->id(),
             ]);
 
             $entry->lines()->createMany([
                 [
                     'ledger_account_id' => $expenseAccount->id,
-                    'debit' => $transaction->amount,
+                    'debit' => $amount,
                     'credit' => 0,
-                    'memo' => $transaction->description,
+                    'memo' => $description,
                 ],
                 [
                     'ledger_account_id' => $creditAccount->id,
                     'debit' => 0,
-                    'credit' => $transaction->amount,
-                    'memo' => $data['payment_status'] === 'paid'
-                        ? 'Expense paid by ' . $data['payment_method']
-                        : 'Expense not yet paid',
+                    'credit' => $amount,
+                    'memo' => $paymentStatus === 'paid'
+                        ? 'Expense paid by ' . $paymentMethod
+                        : 'Unpaid expense - accounts payable',
                 ],
             ]);
 
-            // Reuse the existing accounting validation.
+            // Validate and post using the existing accounting service.
             app(AccountingService::class)->post($entry);
 
-            $transaction->update([
-                'journal_entry_id' => $entry->id,
-            ]);
-
-            return $transaction->fresh(['journalEntry']);
+            return $entry->fresh(['lines.account', 'creator']);
         });
     }
 
@@ -77,7 +78,7 @@ class BusinessTransactionService
 
         if (! $account) {
             throw ValidationException::withMessages([
-                'amount' => "The required ledger account {$code} is missing or inactive. Check the chart of accounts.",
+                'amount' => "Required ledger account {$code} is missing or inactive. Check your chart of accounts.",
             ]);
         }
 
